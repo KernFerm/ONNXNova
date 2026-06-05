@@ -33,6 +33,7 @@ const elements = {
   recentModels: document.getElementById("recentModels"),
   recentFolders: document.getElementById("recentFolders"),
   pythonStatusSummary: document.getElementById("pythonStatusSummary"),
+  pythonDetectionDetail: document.getElementById("pythonDetectionDetail"),
   pythonPackageList: document.getElementById("pythonPackageList"),
   progressLabel: document.getElementById("progressLabel"),
   progressPercent: document.getElementById("progressPercent"),
@@ -317,6 +318,8 @@ function collectConversionPayload() {
 
 function renderPythonStatus(status) {
   elements.pythonPackageList.innerHTML = "";
+  elements.pythonDetectionDetail.hidden = true;
+  elements.pythonDetectionDetail.textContent = "";
 
   if (!status.pythonFound) {
     elements.pythonStatusSummary.className = "status-banner error";
@@ -334,6 +337,11 @@ function renderPythonStatus(status) {
   } else {
     elements.pythonStatusSummary.className = "status-banner warn";
     elements.pythonStatusSummary.textContent = `Python ${status.pythonVersion || "unknown"} found. Detected backend: ${status.backendLabel}. Some required packages still need attention.`;
+  }
+
+  if (status.detectionMethod) {
+    elements.pythonDetectionDetail.hidden = false;
+    elements.pythonDetectionDetail.textContent = `Detected via: ${status.detectionMethod}`;
   }
 
   packageEntries.forEach(([packageName, pkg]) => {
@@ -359,6 +367,8 @@ function renderPythonStatus(status) {
 async function refreshPythonStatus() {
   elements.pythonStatusSummary.className = "status-banner neutral";
   elements.pythonStatusSummary.textContent = "Checking Python 3.11.9 and required packages...";
+  elements.pythonDetectionDetail.hidden = true;
+  elements.pythonDetectionDetail.textContent = "";
   elements.pythonPackageList.innerHTML = "";
   const status = await window.converterApi.getPythonStatus();
   renderPythonStatus(status);
