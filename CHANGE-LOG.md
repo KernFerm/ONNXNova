@@ -2,6 +2,24 @@
 
 All notable changes to `ONNX Nova` should be documented in this file.
 
+## [0.0.64] - 2026-06-04
+
+### Added
+
+- legacy YOLOv5 compatibility support alongside newer Ultralytics model loading
+- fallback YOLOv5 dependency wiring in backend requirements and dependency installer flow
+
+### Changed
+
+- synced AMD DirectML package expectations across requirements, app status checks, and installer setup
+- updated versioned docs to the current `0.0.64` release
+
+### Fixed
+
+- improved packaged splash asset inclusion for installed builds
+- strengthened packaged Python detection so installed app builds can find Python more reliably
+- auto-selected the output folder from the chosen model path to make conversion flow easier
+
 ## [0.0.50] - 2026-06-04
 
 ### Added
