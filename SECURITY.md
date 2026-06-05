@@ -1,6 +1,6 @@
 # Security Policy
 
-Current documented release: `0.0.50`
+Current documented release: `0.0.64`
 
 ## Supported Scope
 
