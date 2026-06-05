@@ -602,41 +602,71 @@ function getPythonLaunchOptions(scriptPath, args = []) {
 
   if (process.platform === "win32") {
     return [
-      { command: "py", args: ["-3.11", ...baseArgs] },
-      { command: "py", args: ["-3", ...baseArgs] },
+      { command: "py", args: ["-3.11", ...baseArgs], source: "Python launcher (py -3.11)" },
+      { command: "py", args: ["-3", ...baseArgs], source: "Python launcher (py -3)" },
       ...getWindowsPythonExecutableCandidates().map((candidatePath) => ({
         command: candidatePath,
-        args: baseArgs
+        args: baseArgs,
+        source: `Direct python.exe path (${candidatePath})`
       })),
-      { command: "python", args: baseArgs },
-      { command: "python3", args: baseArgs }
+      { command: "python", args: baseArgs, source: "PATH command (python)" },
+      { command: "python3", args: baseArgs, source: "PATH command (python3)" }
     ];
   }
 
   return [
-    { command: "python3", args: baseArgs },
-    { command: "python", args: baseArgs }
+    { command: "python3", args: baseArgs, source: "PATH command (python3)" },
+    { command: "python", args: baseArgs, source: "PATH command (python)" }
   ];
 }
 
 function getPythonInlineOptions(code) {
   if (process.platform === "win32") {
     return [
-      { command: "py", args: ["-3.11", "-c", code] },
-      { command: "py", args: ["-3", "-c", code] },
+      { command: "py", args: ["-3.11", "-c", code], source: "Python launcher (py -3.11)" },
+      { command: "py", args: ["-3", "-c", code], source: "Python launcher (py -3)" },
       ...getWindowsPythonExecutableCandidates().map((candidatePath) => ({
         command: candidatePath,
-        args: ["-c", code]
+        args: ["-c", code],
+        source: `Direct python.exe path (${candidatePath})`
       })),
-      { command: "python", args: ["-c", code] },
-      { command: "python3", args: ["-c", code] }
+      { command: "python", args: ["-c", code], source: "PATH command (python)" },
+      { command: "python3", args: ["-c", code], source: "PATH command (python3)" }
     ];
   }
 
   return [
-    { command: "python3", args: ["-c", code] },
-    { command: "python", args: ["-c", code] }
+    { command: "python3", args: ["-c", code], source: "PATH command (python3)" },
+    { command: "python", args: ["-c", code], source: "PATH command (python)" }
   ];
+}
+
+function runPythonInlineProbe(candidates, code) {
+  for (const candidate of candidates) {
+    const result = spawnSync(candidate.command, [...candidate.args.slice(0, -1), code], {
+      cwd: __dirname,
+      shell: false,
+      windowsHide: true,
+      encoding: "utf8"
+    });
+
+    if (result.error || result.status !== 0) {
+      continue;
+    }
+
+    const stdout = String(result.stdout || "").trim();
+    if (!stdout) {
+      continue;
+    }
+
+    return {
+      candidate,
+      stdout,
+      stderr: String(result.stderr || "").trim()
+    };
+  }
+
+  return null;
 }
 
 function guessModelType(filePath) {
@@ -907,9 +937,9 @@ print(json.dumps(result))
 `;
 
     const candidates = getPythonInlineOptions(versionCode);
-    let attemptIndex = 0;
+    const versionProbe = runPythonInlineProbe(candidates, versionCode);
 
-    const resolveNotDetected = () => {
+    if (!versionProbe) {
       resolve({
         pythonFound: false,
         pythonVersion: null,
@@ -919,131 +949,75 @@ print(json.dumps(result))
         backend: "unknown",
         backendLabel: "Unknown",
         backendMatchesProfile: false,
+        detectionMethod: "",
         message: `Python ${REQUIRED_PYTHON_VERSION} was not detected.`
       });
-    };
+      return;
+    }
 
-    const inspectPackages = (command, baseArgs, pythonVersion, matchesRequiredVersion) => {
-      const child = spawn(command, [...baseArgs, packageCode], {
-        cwd: __dirname,
-        shell: false,
-        windowsHide: true
+    let versionStatus;
+    try {
+      versionStatus = JSON.parse(versionProbe.stdout);
+    } catch (_error) {
+      resolve({
+        pythonFound: false,
+        pythonVersion: null,
+        matchesRequiredVersion: false,
+        packages: {},
+        allPackages: {},
+        backend: "unknown",
+        backendLabel: "Unknown",
+        backendMatchesProfile: false,
+        detectionMethod: "",
+        message: "Python responded, but the version check could not be parsed."
       });
+      return;
+    }
 
-      let stdout = "";
-      let stderr = "";
-
-      child.stdout.on("data", (chunk) => {
-        stdout += chunk.toString();
-      });
-
-      child.stderr.on("data", (chunk) => {
-        stderr += chunk.toString();
-      });
-
-      child.on("error", () => {
-        resolve({
-          pythonFound: true,
-          pythonVersion,
-          matchesRequiredVersion,
-          packages: {},
-          allPackages: {},
-          backend: "unknown",
-          backendLabel: "Unknown",
-          backendMatchesProfile: false,
-          message: "Python was detected, but package inspection could not be started."
-        });
-      });
-
-      child.on("close", (code) => {
-        if (code !== 0) {
-          resolve({
-            pythonFound: true,
-            pythonVersion,
-            matchesRequiredVersion,
-            packages: {},
-            allPackages: {},
-            backend: "unknown",
-            backendLabel: "Unknown",
-            backendMatchesProfile: false,
-            message: stderr.trim() || "Python was detected, but package inspection failed."
-          });
-          return;
+    const packageProbe = runPythonInlineProbe(
+      [
+        {
+          command: versionProbe.candidate.command,
+          args: versionProbe.candidate.args
         }
+      ],
+      packageCode
+    );
 
-        try {
-          const parsed = JSON.parse(stdout.trim());
-          resolve(parsed);
-        } catch (_error) {
-          resolve({
-            pythonFound: true,
-            pythonVersion,
-            matchesRequiredVersion,
-            packages: {},
-            allPackages: {},
-            backend: "unknown",
-            backendLabel: "Unknown",
-            backendMatchesProfile: false,
-            message: stderr.trim() || "Python was detected, but package status could not be parsed."
-          });
-        }
+    if (!packageProbe) {
+      resolve({
+        pythonFound: true,
+        pythonVersion: versionStatus.pythonVersion ?? null,
+        matchesRequiredVersion: Boolean(versionStatus.matchesRequiredVersion),
+        packages: {},
+        allPackages: {},
+        backend: "unknown",
+        backendLabel: "Unknown",
+        backendMatchesProfile: false,
+        detectionMethod: versionProbe.candidate.source || "",
+        message: "Python was detected, but package inspection failed."
       });
-    };
+      return;
+    }
 
-    const tryNext = () => {
-      if (attemptIndex >= candidates.length) {
-        resolveNotDetected();
-        return;
-      }
-
-      const candidate = candidates[attemptIndex++];
-      const child = spawn(candidate.command, candidate.args, {
-        cwd: __dirname,
-        shell: false,
-        windowsHide: true
+    try {
+      const parsed = JSON.parse(packageProbe.stdout);
+      parsed.detectionMethod = versionProbe.candidate.source || "";
+      resolve(parsed);
+    } catch (_error) {
+      resolve({
+        pythonFound: true,
+        pythonVersion: versionStatus.pythonVersion ?? null,
+        matchesRequiredVersion: Boolean(versionStatus.matchesRequiredVersion),
+        packages: {},
+        allPackages: {},
+        backend: "unknown",
+        backendLabel: "Unknown",
+        backendMatchesProfile: false,
+        detectionMethod: versionProbe.candidate.source || "",
+        message: "Python was detected, but package status could not be parsed."
       });
-
-      let stdout = "";
-      let stderr = "";
-
-      child.stdout.on("data", (chunk) => {
-        stdout += chunk.toString();
-      });
-
-      child.stderr.on("data", (chunk) => {
-        stderr += chunk.toString();
-      });
-
-      child.on("error", (error) => {
-        if (error.code === "ENOENT") {
-          tryNext();
-          return;
-        }
-
-        tryNext();
-      });
-
-      child.on("close", (code) => {
-        if (code !== 0) {
-          tryNext();
-          return;
-        }
-
-        try {
-          const parsed = JSON.parse(stdout.trim());
-          inspectPackages(
-            candidate.command,
-            candidate.args.slice(0, -1),
-            parsed.pythonVersion ?? null,
-            Boolean(parsed.matchesRequiredVersion)
-          );
-        } catch (_error) {
-          tryNext();
-        }
-      });
-    };
-
-    tryNext();
+    }
   });
 }
 
