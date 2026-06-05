@@ -50,6 +50,18 @@ const CONVERSION_STAGES = [
 const SPLASH_MINIMUM_MS = 6500;
 const SPLASH_FADE_OUT_MS = 600;
 
+function getRuntimeWorkingDirectory() {
+  return app.isPackaged ? process.resourcesPath : __dirname;
+}
+
+function getBackendScriptPath(scriptName) {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, "app.asar.unpacked", "backend", scriptName);
+  }
+
+  return path.join(__dirname, "backend", scriptName);
+}
+
 function sanitizePath(inputPath) {
   if (typeof inputPath !== "string") {
     throw new Error("Invalid path value.");
@@ -644,7 +656,7 @@ function getPythonInlineOptions(code) {
 function runPythonInlineProbe(candidates, code) {
   for (const candidate of candidates) {
     const result = spawnSync(candidate.command, [...candidate.args.slice(0, -1), code], {
-      cwd: __dirname,
+      cwd: getRuntimeWorkingDirectory(),
       shell: false,
       windowsHide: true,
       encoding: "utf8"
@@ -765,7 +777,7 @@ function forwardTextChunks(event, text, sink) {
 
 function runPythonConversion(inputPath, outputFolder, options, event) {
   return new Promise((resolve, reject) => {
-    const scriptPath = path.join(__dirname, "backend", "convert.py");
+    const scriptPath = getBackendScriptPath("convert.py");
     const args = [
       "--input",
       inputPath,
@@ -800,7 +812,7 @@ function runPythonConversion(inputPath, outputFolder, options, event) {
 
       const candidate = candidates[attemptIndex++];
       const child = spawn(candidate.command, candidate.args, {
-        cwd: __dirname,
+        cwd: getRuntimeWorkingDirectory(),
         shell: false,
         windowsHide: true
       });
