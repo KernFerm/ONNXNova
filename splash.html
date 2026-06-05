@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ONNX Nova Loading</title>
+    <link rel="stylesheet" href="splash.css" />
+  </head>
+  <body>
+    <div class="splash-shell">
+      <div class="orb orb-a" aria-hidden="true"></div>
+      <div class="orb orb-b" aria-hidden="true"></div>
+      <div class="grid" aria-hidden="true"></div>
+
+      <main class="splash-card">
+        <div class="logo-wrap">
+          <img src="build/onnx-nova-logo.png" alt="ONNX Nova logo" class="logo-image" />
+        </div>
+        <p class="eyebrow">Advanced Export Utility</p>
+        <h1>ONNX Nova</h1>
+        <p id="splashSubtitle" class="subtitle">Initializing export environment...</p>
+
+        <div class="status-stack" aria-hidden="true">
+          <span class="status-pill">Loading Interface</span>
+          <span class="status-pill">Checking Environment</span>
+          <span class="status-pill">Preparing Workspace</span>
+        </div>
+
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill"></div>
+        </div>
+      </main>
+    </div>
+    <script src="splash.js"></script>
+  </body>
+</html>

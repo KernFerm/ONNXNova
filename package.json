@@ -1,0 +1,80 @@
+{
+  "name": "onnx-nova",
+  "version": "0.0.64",
+  "description": "Futuristic desktop export utility for transforming PyTorch .pt models into ONNX workflows.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "prepare:protected": "node tools/build-protected-release.js --prepare-only",
+    "pack:protected": "node tools/build-protected-release.js --dir",
+    "dist:protected": "node tools/build-protected-release.js"
+  },
+  "keywords": [
+    "electron",
+    "pytorch",
+    "onnx",
+    "converter"
+  ],
+  "author": "BubblesTheDev",
+  "license": "GNU",
+  "build": {
+    "appId": "com.frost.onnxnova",
+    "productName": "ONNX Nova",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "index.html",
+      "splash.html",
+      "splash.js",
+      "splash.css",
+      "styles.css",
+      "build/onnx-nova-logo.png",
+      "backend/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "tools",
+        "to": "tools"
+      },
+      {
+        "from": "build/icon-256.ico",
+        "to": "icon.ico"
+      }
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "forceCodeSigning": false,
+      "icon": "build/icon-256.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": false,
+      "include": "build/installer.nsh",
+      "license": "build/LICENSE.txt",
+      "installerIcon": "build/icon-256.ico",
+      "uninstallerIcon": "build/icon-256.ico",
+      "installerHeaderIcon": "build/icon-256.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.3.3",
+    "electron-builder": "^26.8.1",
+    "javascript-obfuscator": "^4.2.2"
+  }
+}

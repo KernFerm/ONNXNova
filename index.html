@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;"
+    />
+    <title>ONNX Nova</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="cosmos" aria-hidden="true">
+      <div class="aurora aurora-one"></div>
+      <div class="aurora aurora-two"></div>
+      <div class="grid-haze"></div>
+      <div class="particle-field">
+        <span class="particle p1"></span>
+        <span class="particle p2"></span>
+        <span class="particle p3"></span>
+        <span class="particle p4"></span>
+        <span class="particle p5"></span>
+        <span class="particle p6"></span>
+        <span class="particle p7"></span>
+        <span class="particle p8"></span>
+        <span class="particle p9"></span>
+        <span class="particle p10"></span>
+        <span class="particle p11"></span>
+        <span class="particle p12"></span>
+      </div>
+    </div>
+
+    <main class="app-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Desktop Model Utility</p>
+          <h1>ONNX Nova</h1>
+          <p class="subtitle">
+            Bring in a `.pt` model, inspect its details, shape the export settings, and launch a
+            guided conversion with live Python environment checks.
+          </p>
+        </div>
+        <div class="hero-badges">
+          <span class="hero-badge">Python 3.11.9</span>
+          <span class="hero-badge">Ultralytics Aware</span>
+          <span class="hero-badge">ONNX Validation</span>
+        </div>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel span-2">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Step 1</p>
+              <h2>Choose Model</h2>
+            </div>
+            <button id="selectPtFileButton" class="action-button">Select .pt File</button>
+          </div>
+
+          <div id="dropZone" class="drop-zone" tabindex="0">
+            <p class="drop-title">Drag and drop a `.pt` file here</p>
+            <p class="drop-subtitle">or use the select button above</p>
+          </div>
+
+          <div class="path-card">
+            <span class="path-label">Selected model</span>
+            <div class="path-display monospace" id="ptFilePath">No file selected</div>
+          </div>
+
+          <div class="model-info-grid">
+            <article class="info-tile">
+              <span class="info-label">Filename</span>
+              <strong id="modelFileName">No file loaded</strong>
+            </article>
+            <article class="info-tile">
+              <span class="info-label">Size</span>
+              <strong id="modelFileSize">-</strong>
+            </article>
+            <article class="info-tile">
+              <span class="info-label">Last Modified</span>
+              <strong id="modelLastModified">-</strong>
+            </article>
+            <article class="info-tile">
+              <span class="info-label">Guessed Type</span>
+              <strong id="modelType">-</strong>
+            </article>
+          </div>
+
+          <div class="recent-block">
+            <div class="recent-header">
+              <h3>Recent Models</h3>
+              <button id="clearRecentModelsButton" class="ghost-button">Clear</button>
+            </div>
+            <div id="recentModels" class="recent-list empty-state">No recent model files yet.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Step 2</p>
+              <h2>Output</h2>
+            </div>
+            <button id="selectOutputFolderButton" class="action-button secondary">
+              Select Output Folder
+            </button>
+          </div>
+
+          <div class="path-card">
+            <span class="path-label">Output folder</span>
+            <div class="path-display monospace" id="outputFolderPath">No output folder selected</div>
+          </div>
+
+          <label class="field">
+            <span class="field-label">Output filename</span>
+            <input id="outputNameInput" class="text-input monospace" type="text" value="model.onnx" />
+          </label>
+
+          <div class="recent-block">
+            <div class="recent-header">
+              <h3>Recent Folders</h3>
+              <button id="clearRecentFoldersButton" class="ghost-button">Clear</button>
+            </div>
+            <div id="recentFolders" class="recent-list empty-state">No recent output folders yet.</div>
+          </div>
+
+          <details class="advanced-card" id="advancedSettings">
+            <summary>
+              <span>
+                <small>Advanced</small>
+                <strong>Export Settings</strong>
+              </span>
+              <span class="summary-hint">Input size, opset, dynamic axes</span>
+            </summary>
+
+            <div class="advanced-grid">
+              <label class="field">
+                <span class="field-label">Input Size Preset</span>
+                <select id="inputSizePresetSelect" class="text-input">
+                  <option value="640">640 x 640</option>
+                  <option value="320">320 x 320</option>
+                  <option value="custom">Custom Size (Experimental)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Input Width</span>
+                <input id="inputWidthInput" class="text-input" type="number" min="1" value="640" />
+              </label>
+              <label class="field">
+                <span class="field-label">Input Height</span>
+                <input id="inputHeightInput" class="text-input" type="number" min="1" value="640" />
+              </label>
+              <div id="customSizeNotice" class="info-note experimental-note" hidden>
+                Custom input sizes are experimental and may not work for every model.
+              </div>
+              <label class="field">
+                <span class="field-label">Opset Version</span>
+                <input id="opsetVersionInput" class="text-input" type="number" min="1" value="12" />
+                <small class="field-help field-help-warning">Recommended: 12. Only change this if you know your model needs a different ONNX opset.</small>
+              </label>
+              <label class="toggle-field">
+                <input id="dynamicAxesCheckbox" type="checkbox" checked />
+                <span>
+                  <strong>Dynamic Axes</strong>
+                  <small>Allow flexible batch and image dimensions</small>
+                </span>
+              </label>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Environment</p>
+              <h2>Python Status</h2>
+            </div>
+            <div class="inline-actions">
+              <button id="refreshPythonStatusButton" class="ghost-button">Refresh</button>
+              <button id="installDependenciesButton" class="action-button secondary slim">
+                Install Dependencies
+              </button>
+            </div>
+          </div>
+
+          <div id="pythonStatusSummary" class="status-banner neutral">
+            Checking Python 3.11.9 and required packages...
+          </div>
+          <div id="pythonPackageList" class="package-list"></div>
+        </section>
+
+        <section class="panel span-2">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Step 3</p>
+              <h2>Convert</h2>
+            </div>
+            <div class="inline-actions">
+              <button id="convertButton" class="action-button convert">Convert</button>
+              <button id="openOutputFolderButton" class="ghost-button" disabled>Open Output Folder</button>
+            </div>
+          </div>
+
+          <div class="trust-card">
+            <label class="toggle-field trust-toggle">
+              <input id="trustModelCheckbox" type="checkbox" />
+              <span>
+                <strong>I trust this model file</strong>
+                <small>
+                  Some `.pt` files require trusted Python object deserialization. Only enable this for
+                  <span class="inline-warning-text">files from a source you trust.</span>
+                </small>
+              </span>
+            </label>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-meta">
+              <span id="progressLabel">Ready for conversion</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div id="progressBarFill" class="progress-bar-fill"></div>
+            </div>
+            <div id="stageChips" class="stage-chips"></div>
+          </div>
+        </section>
+
+        <section class="panel span-2">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Logs</p>
+              <h2>Status / Log</h2>
+            </div>
+            <div class="inline-actions">
+              <button id="copyLogButton" class="ghost-button">Copy Log</button>
+              <button id="clearLogButton" class="ghost-button">Clear Log</button>
+            </div>
+          </div>
+          <pre id="logArea" class="log-area" aria-live="polite"></pre>
+        </section>
+
+        <section class="panel span-2">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Result</p>
+              <h2>Messages</h2>
+            </div>
+          </div>
+          <div id="messageBox" class="message neutral" aria-live="assertive">
+            Select a model and output folder to begin.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

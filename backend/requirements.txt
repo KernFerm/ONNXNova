@@ -1,0 +1,10 @@
+# Baseline CPU-friendly install for manual setups.
+# For GPU-specific installs, use:
+# - requirements-nvidia.txt
+# - requirements-amd.txt
+torch==2.7.1
+torchaudio==2.7.1
+torchvision==0.22.1
+ultralytics==8.4.60
+onnx>=1.19.1
+onnxruntime==1.15.1
