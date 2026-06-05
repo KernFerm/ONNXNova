@@ -2,7 +2,7 @@
 
 All notable changes to `ONNX Nova` should be documented in this file.
 
-## [0.0.64] - 2026-06-04
+## [0.0.65] - 2026-06-04
 
 ### Added
 
@@ -11,7 +11,7 @@ All notable changes to `ONNX Nova` should be documented in this file.
 ### Changed
 
 - synced AMD DirectML package expectations across requirements, app status checks, and installer setup
-- updated versioned docs to the current `0.0.64` release
+- updated versioned docs to the current `0.0.65` release
 
 ### Fixed
 
