@@ -626,6 +626,13 @@ select.text-input option {
   color: var(--error);
 }
 
+.status-detail {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .package-list {
   margin-top: 14px;
   display: grid;
