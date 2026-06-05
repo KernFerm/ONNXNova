@@ -4,7 +4,7 @@
 
 It is built to feel guided, polished, and powerful, while still being easy for everyday users to operate.
 
-Current documented release: `0.0.50`
+Current documented release: `0.0.64`
 
 ## ✨ What ONNX Nova Does
 
