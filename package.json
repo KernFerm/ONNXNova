@@ -1,6 +1,6 @@
 {
   "name": "onnx-nova",
-  "version": "0.0.65",
+  "version": "0.0.70",
   "description": "Futuristic desktop export utility for transforming PyTorch .pt models into ONNX workflows.",
   "main": "main.js",
   "scripts": {
@@ -76,8 +76,8 @@
     }
   },
   "devDependencies": {
-    "electron": "^42.3.3",
-    "electron-builder": "^26.8.1",
-    "javascript-obfuscator": "^4.2.2"
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.2",
+    "javascript-obfuscator": "^5.4.3"
   }
 }
