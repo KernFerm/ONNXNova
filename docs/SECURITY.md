@@ -1,6 +1,6 @@
 # Security Policy
 
-Current documented release: `0.0.65`
+Current documented release: `0.0.70`
 
 ## Supported Scope
 
@@ -62,6 +62,7 @@ Current hardening in the project includes:
 - Python launched without shell command interpolation
 - guided trust confirmation before unsafe model loading
 - dependency setup based on official download sources
+- dependency security updates applied to the packaged app toolchain
 
 ## Response Goal
 
