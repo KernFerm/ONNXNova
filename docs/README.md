@@ -4,7 +4,7 @@
 
 It is built to feel guided, polished, and powerful, while still being easy for everyday users to operate.
 
-Current documented release: `0.0.65`
+Current documented release: `0.0.70`
 
 ## ✨ What ONNX Nova Does
 
@@ -16,6 +16,7 @@ Current documented release: `0.0.65`
 - Helps install missing software when needed
 - Supports CPU, NVIDIA, AMD, and dual-GPU systems
 - Includes a branded splash screen and Windows desktop shortcut setup
+- Includes updated dependency security maintenance in the current release
 
 ## 💾 Installing ONNX Nova
 
@@ -119,6 +120,7 @@ That setup is designed to:
 - Skip software you already have
 - Download only what is missing
 - Install the correct versions for your hardware path
+- Keep the expected backend dependency set aligned with the current secured release
 
 ## ❗ Trust Warning
 
