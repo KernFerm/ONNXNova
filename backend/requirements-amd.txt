@@ -2,9 +2,9 @@
 # Keep this separate from the NVIDIA CUDA stack.
 # DirectML support is currently capped at PyTorch 2.3.1 by Microsoft's torch-directml guidance,
 # so these torch/torchaudio/torchvision pins are intentionally lower than the NVIDIA stack.
-torch==2.4.1
-torchaudio==2.4.1
-torchvision==0.19.1
+torch==2.6.0
+torchaudio==2.6.0
+torchvision==0.21.0
 torch-directml==0.2.5.dev240914
 ultralytics==8.4.60
 onnx>=1.19.1
