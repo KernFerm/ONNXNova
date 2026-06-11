@@ -1,6 +1,6 @@
 # ONNX Nova EXE Release
 
-Current release: `0.0.65`
+Current release: `0.0.70`
 
 ## What This File Is
 
@@ -17,6 +17,7 @@ It is meant for end users who want to install and use the desktop app without se
 - Built-in dependency setup launcher
 - Support for CPU, NVIDIA, AMD, and dual-GPU systems
 - Support for modern Ultralytics model workflows
+- Dependency security updates for the packaged release toolchain
 
 ## Before Installing
 
@@ -61,6 +62,7 @@ This release helps users:
 ## Notes
 
 - Newer Ultralytics models use the supported loader path in this release
+- This release includes dependency security updates and refreshed packaged build dependencies
 - If conversion fails, check the in-app log area first
 
 ## Output
