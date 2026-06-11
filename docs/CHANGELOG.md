@@ -2,6 +2,12 @@
 
 All notable changes to `ONNX Nova` should be documented in this file.
 
+## [0.0.71] - 2026-06-11
+
+### Changed
+
+- refreshed release documentation for `0.0.71`
+
 ## [0.0.70] - 2026-06-11
 
 ### Changed
