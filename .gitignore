@@ -8,6 +8,8 @@ release/
 
 # Protected build staging
 .protected-release/
+dist-protected/
+setup/
 
 # Logs
 *.log
