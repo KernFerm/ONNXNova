@@ -6,6 +6,8 @@ It is built to feel guided, polished, and powerful, while still being easy for e
 
 Current documented release: `0.0.80`
 
+Current Version `0.0.85`
+
 ## ✨ What ONNX Nova Does
 
 - Converts trusted `.pt` model files into `.onnx`
