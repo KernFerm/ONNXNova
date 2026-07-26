@@ -2,12 +2,18 @@
 
 All notable changes to `ONNX Nova` should be documented in this file.
 
+## [0.0.100] - 2026-07-26
+
+### Changed
+
+- refreshed release documentation for `0.0.100`
+- kept the packaged dependency security updates documented for the current release
+
 ## [0.0.90] - 2026-07-11
 
 ### Changed
 
 - refreshed release documentation for `0.0.90`
-- dependency update
 
 ## [0.0.80] - 2026-06-25
 
