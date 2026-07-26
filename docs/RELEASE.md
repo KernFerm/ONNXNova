@@ -1,6 +1,6 @@
 # ONNX Nova EXE Release
 
-Current release: `0.0.90`
+Current release: `0.0.100`
 
 ## What This File Is
 
